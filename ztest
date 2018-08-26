@@ -1,0 +1,60 @@
+.data
+	Enternum: 	.asciiz	"Please enter a positive integer "
+	Negative: 	.asciiz	"Negative integer is not allowed \n"
+	Enteragain: 	.asciiz	"Please enter another positive integer "
+	Multiply: 	.asciiz	" * "
+	Equals: 	.asciiz	" = "
+	Exponent: 	.asciiz	" ^ "
+	NewLine:	.asciiz "\n"
+	
+.text
+	not $t1, $t1
+	enterFirst:
+		addi $v0, $zero, 4 	#Do syscall 4
+		la $a0, Enternum	#Load Enternum into address
+		syscall			#Do command
+		addi $v0, $zero, 5 	#Read integer
+		syscall			#Syscall
+		add $s0, $zero, $v0	#Store integer into $s0
+	
+	slt $s1, $s0, $zero 	#If entered integer is less than zero, set $s1 to 1
+	bne $s1, $zero, repeat 	#Branch to repeat segment if $s1 equals 1
+	beq $s1, $zero, next	#Branch to 'next' segment if $s1 equals 0 
+	
+	repeat:
+		addi $v0, $zero, 4	#Print String 
+		la $a0, Negative	#Load Negative into address
+		syscall
+		j enterFirst		#Jump to enterFirst segment
+	
+	next:
+		addi $v0, $zero, 4	#Print string command
+		la $a0, Enteragain	#Load Enteragain into address
+		syscall			#Syscall
+		addi $v0, $zero, 5	#Read integer command
+		syscall			#Syscall
+		add $s2, $zero, $v0	#Store integer into $s2
+	
+	slt $s3, $s2, $zero	#If entered integer is less than zero, set $s3 to 1
+	bne $s3, $zero, repeat2 #Branch to repeat2 segment if $s3 equals 1
+	beq $s3, $zero, math	#Branch to math segment if $s3 equals 0
+	
+	repeat2: 
+		addi $v0, $zero, 4	#Print String 
+		la $a0, Negative	#Load Negative into address
+		syscall
+		j next			#Jump to enterFirst segment
+	
+	math:
+		addi $v0, $zero, 1	#Print Integer
+		add $a0, $zero, $s0	#Load $s0 to be printed
+		syscall
+		addi $v0, $zero, 4	#Print String
+		la $a0, Multiply	#Load Multiply into address
+		syscall
+		addi $v0, $zero, 1	#Print Integer
+		add $a0, $zero, $s2	#Load $s2 to be printed
+		syscall
+		addi $v0, $zero, 4	#Print String
+		la $a0, Equals		#Load Equals into address
+		syscall
